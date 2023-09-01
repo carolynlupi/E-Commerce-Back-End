@@ -16,14 +16,14 @@ Product.init(
       autoIncrement: true,
     },
     product_name: {
-      type: DataTypes.String,
+      type: DataTypes.STRING, // Corrected data type
       allowNull: false,
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       validate: {
-        isNumbeic: true,
+        isNumeric: true, // Corrected spelling of "isNumeric"
       },
     },
     category_id: {
