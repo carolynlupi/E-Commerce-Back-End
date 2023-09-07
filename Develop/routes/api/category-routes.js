@@ -1,81 +1,94 @@
-const router = require('express').Router();
-const { Category, Product } = require('../../models');
+// Import
+const router = require("express").Router();
+const { Category, Product } = require("../../models");
 
 // The `/api/categories` endpoint
-router.get('/', async (req, res) => {
-  //find all categories
-  await Category.findAll({
-    attributes: ["id, category_name"],
-    include: [{
-      model: Product,
-      attributes: ["id", "product_name", "price", "stock", "category_id"]
-    }]
-  })
-  .then((categories) => {
-    res.json(categories);
-  })
-});
 
-router.get('/:id', async (req, res) => {
-  //find one category by its 'id' value
-  //be sure to include its associated Products
-  await Category.findByPk(req.params.id, {
+router.get("/", (req, res) => {
+  // find all categories including its associated Products
+  Category.findAll({
     attributes: ["id", "category_name"],
     include: [
       {
-        model: Product, attributes: ["id", "product_name", "price", "stock", "category_id"],
-      }
+        model: Product,
+        attributes: ["id", "product_name", "price", "stock", "category_id"],
+      },
     ],
   })
-  .then((category) => {
-    res.json(category);
-  })
-  .catch((err) => {
-    res.json(err);
-  });
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
-router.post('/', async (req, res) => {
+router.get("/:id", (req, res) => {
+  // find one category by its `id` value including its associated Products
+  Category.findOne({
+    where: {
+      id: req.params.id,
+    },
+    attributes: ["id", "category_name"],
+    include: [
+      {
+        model: Product,
+        attributes: ["id", "product_name", "price", "stock", "category_id"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+});
+
+router.post("/", (req, res) => {
   // create a new category
- await Category.create(req.body)
- .then((newCategory) => res.status(200).json(newCategory))
- .catch((err) => {
-  console.log(err);
-  res.status(400).json(err);
- });
+  console.log(req.body);
+  Category.create({ category_name: req.body.category_name })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
-router.put('/:id', async (req, res) => {
+router.put("/:id", (req, res) => {
   // update a category by its `id` value
-  await Category.update(req.body, {
+  Category.update(req.body, {
     where: {
       id: req.params.id,
     },
-})
-.then(cat => Category.findByPk(req.params.id))
-.then((updatedCategory) => res.status(200).json(updatedCategory))
-.catch((err) => {res.json(err);});
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", (req, res) => {
   // delete a category by its `id` value
-  await Category.delete(req.body, {
+  Category.destroy({
     where: {
       id: req.params.id,
     },
   })
-  .then((rmvdCategory) => {
-    res.json('The category was removed from the database');
-  })
-  .catch((err) => {
-    res.json(err);
-  });
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
+// Export
 module.exports = router;
-
-
-
 
 
 

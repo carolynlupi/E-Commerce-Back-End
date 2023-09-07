@@ -1,35 +1,22 @@
-const express = require('express');
-const routes = require('./Develop/routes');
-require('dotenv').config(); // Load environment variables from .env file
-
-// Log the loaded environment variables for debugging
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_DATABASE:', process.env.DB_DATABASE);
-
+// Import express
+const express = require("express");
+// Import routes files
+const routes = require("./routes");
 // Import sequelize connection
-const Sequelize = require('sequelize');
-
-// Use environment variables for database connection details
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE } = process.env;
-
-// Create a Sequelize instance with the environment variables
-const sequelize = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
-  host: DB_HOST,
-  dialect: 'mysql',
-  // ...other Sequelize options...
-});
+const sequelize = require("./config/connection");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(routes);
 
-// Sync sequelize models to the database, then turn on the server
+// Syncs the database so table can be created and seeded using sequelize
+// Allows for server to listen for routes
 sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log('Now listening'));
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}!`);
+  });
 });
