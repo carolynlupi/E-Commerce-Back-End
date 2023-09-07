@@ -1,6 +1,12 @@
 const express = require('express');
-const routes = require('./routes');
-require('dotenv').config();
+const routes = require('./Develop/routes');
+require('dotenv').config(); // Load environment variables from .env file
+
+// Log the loaded environment variables for debugging
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+console.log('DB_DATABASE:', process.env.DB_DATABASE);
 
 // Import sequelize connection
 const Sequelize = require('sequelize');
