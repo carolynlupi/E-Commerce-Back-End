@@ -1,100 +1,45 @@
-// Import
-const router = require("express").Router();
-const { Category, Product } = require("../../models");
+// import important parts of sequelize library
+const { Model, DataTypes } = require("sequelize");
 
-// The `/api/categories` endpoint
+// import our database connection from config.js
+const sequelize = require("../config/connection");
 
-router.get("/", (req, res) => {
-  // find all categories including its associated Products
-  Category.findAll({
-    attributes: ["id", "category_name"],
-    include: [
-      {
-        model: Product,
-        attributes: ["id", "product_name", "price", "stock", "category_id"],
+// Initialize Product model (table) by extending off Sequelize's Model class
+class ProductTag extends Model {}
+
+// set up fields and rules for ProductTag model
+ProductTag.init(
+  {
+    // define columns
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    product_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "product",
+        key: "id",
       },
-    ],
-  })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-});
-
-router.get("/:id", (req, res) => {
-  // find one category by its `id` value including its associated Products
-  Category.findOne({
-    where: {
-      id: req.params.id,
     },
-    attributes: ["id", "category_name"],
-    include: [
-      {
-        model: Product,
-        attributes: ["id", "product_name", "price", "stock", "category_id"],
+    tag_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "tag",
+        key: "id",
       },
-    ],
-  })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-});
-
-router.post("/", (req, res) => {
-  // create a new category
-  console.log(req.body);
-  Category.create({ category_name: req.body.category_name })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-});
-
-router.put("/:id", (req, res) => {
-  // update a category by its `id` value
-  Category.update(req.body, {
-    where: {
-      id: req.params.id,
     },
-  })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-});
-
-router.delete("/:id", (req, res) => {
-  // delete a category by its `id` value
-  Category.destroy({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-});
+  },
+  {
+    sequelize,
+    timestamps: false,
+    freezeTableName: true,
+    underscored: true,
+    modelName: "product_tag",
+  }
+);
 
 // Export
-module.exports = router;
-
-
-
-
-
-
-
-
-
+module.exports = ProductTag;
